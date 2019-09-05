@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/nota-blockchain/Nota-backend#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
-    "firebase": "^6.3.4"
+    "firebase": "^6.3.4",
+    "mongoose": "^5.6.12"
   }
 }
