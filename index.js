@@ -29,13 +29,16 @@ const UserSchema = new Schema({
     email: String,
     phone: String,
     wallet_addr: String,
+    status: String,
     wallet_privkey: String,
     description: String,
     property: {
+        eduname: String,
         edupaper: String,
-        eduaddress: String,
         eduowner: String,
-        eduopendate: String
+        eduaddress: String,
+        eduopendate: String,
+        eduphone: String,
     }
 });
 
@@ -50,7 +53,7 @@ var isAuth = (req, res, next) => {
 
 var userpaperSchema = new Schema({
     name: String,owner: String,address: String,data: String,paper: String,memo: String,id: String});
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model('User', UserSchema);
 var UserPaper = mongoose.model('UserPaper', userpaperSchema);
 
 app.get('/', function(req, res) {
@@ -70,13 +73,13 @@ app.post('/signup', function(req, res) {
         privkey = result.privateKey;
       });
         var user = new User();
-        user.company=req.body.company,
-        user.id=req.body.id,
-        user.mail=req.body.mail,
-        user.name=req.body.name,
-        user.phone=req.body.phone,
-        user.pw=req.body.pw,
-        user.type=req.body.type,
+        user.company=req.query.company,
+        user.id=req.query.id,
+        user.mail=req.query.mail,
+        user.name=req.query.name,
+        user.phone=req.query.phone,
+        user.pw=req.query.pw,
+        user.type=req.query.type,
         user.wallet_addr=walletaddr, 
         user.wallet_privkey=privkey,
         user.save(function(err){
@@ -97,12 +100,12 @@ app.post('/signup', function(req, res) {
 
 app.post('/login', function(req, res) {
     // User.find({id: req.params.id}, {_id: 0, title: 1, published_date: 1},  function(err, books){
-    if(req.body.id === queryRef.id && req.body.pw === queryRef.pw)
+    if(req.query.id === queryRef.id && req.query.pw === queryRef.pw)
      {   console.log("login success")
         req.session.logined = true;
-        req.session.user_id = req.body.id;
+        req.session.user_id = req.query.id;
 }
-    else if(req.body.id === queryRef.id)
+    else if(req.query.id === queryRef.id)
        { console.log("PW wrong")}
     else
        { console.log("login fail")}
@@ -119,30 +122,32 @@ app.post('/login', function(req, res) {
 //     }
     	
 // });
-// app.get('/admin1', function(req, res){
-//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
-//         res.render('admin_1.html');
-//     } else if (req.session.logined === true && req.session.user_id !== admin){
-//         res.send("You are not a admin");
-//     } else {
-//         res.send("not logined!");
-//     }
-    	
+app.get('/admin1', function(req, res){
+    User.find({status: "1" && type: "edu_user" },{id: 1, eduaddress: 1,eduname: 1,eduopendate: 1,edupaper: 1,description: 1 },(function(err, users){
+        if(err) return res.status(500).send({error: 'database failure'});
+        res.json(users);	
+}));
 });
 app.post('/admin1', function(req,res){
 
-    var docRef = db.collection('edu_user').doc(name);
-    var adddata = docRef.set({
-        name : req.body.name,
-        owner : req.body.owner,
-        address : req.body.address,
-        data : req.body.data,
-        paper : req.body.paper,
-        memo : req.body.memo,
-        id : req.body.id,
+    var user = new User();
+    user.eduname= req.query.name;
+    user.edupaper= req.query.edupaper;
+    user.eduaddress= req.query.eduaddress;
+    user.eduowner= req.query.eduowner;
+    user.eduaddress= req.query.eduaddress;
+    user.eduopendate= req.query.eduopendate;
+    user.eduphone= req.query.phonenumber;
+    user.save(function(err){
+        if(err){
+            console.error(err);
+            res.json({result: "error"});
+            return;
+        };
+
+        res.json({result: "ok"});
     });
-    	
-});
+    });
 // app.get('/admin2', function(req, res){
 //     if(!req.session && req.session.logined === true && req.session.user_id === admin){
 //         res.render('admin_2.html')
@@ -161,7 +166,7 @@ app.post('/admin2', function(req, res){
     });
 });
 app.post('/admin2/accept', function(req,res){
-    UserPaper.remove({id : req.body.id} , function(err, output){
+    UserPaper.remove({id : req.query.id} , function(err, output){
         if(err) return res.status(500).json({ error: "database failure" });
         res.status(204).end();
     });
