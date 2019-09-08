@@ -6,8 +6,10 @@ const fs = require('fs');
 const Web3 = require('web3');
 const web3 = new Web3();
 const app = express();
+const cors = require('cors');
+const corsOptions = {origin: true,credentials: true};
 
-
+app.use(cors(corsOptions));
 app.use(express.json());
 
 var db = mongoose.connection;
@@ -30,22 +32,12 @@ const UserSchema = new Schema({
     wallet_privkey: String,
     description: String,
     property: {
-        paper: String,
-        address: String,
-        owner: String,
-        opendate: String
+        edupaper: String,
+        eduaddress: String,
+        eduowner: String,
+        eduopendate: String
     }
 });
-
-const transferToken = (privKey, from, to, value) => {
-    const rawTran = {
-        to,
-        from,
-        nonce: count(from),
-        gasPrice: '0x04e3b29200',
-        gasLimit: '0x7458',
-    }
-};
 
 var transfertoken = function sendeth(privatekey,walletaddr,toaddr,value) { var rawTransaction = {"from": walletaddr,"nonce": web3.toHex(count),"gasPrice": "0x04e3b29200","gasLimit": "0x7458","to": contractAddress,"value": "0x0","data": contract.transfer.getData(toaddr, value, {from: walletaddr}),"chainId": 0x03};var privKey = new Buffer(privatekey, 'hex');var tx = new Tx(rawTransaction); tx.sign(privKey); var serializedTx = tx.serialize(); web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) { if (!err) console.log(hash);else console.log(err);});};
 var checklogin = function checklogin(){if(!req.session && req.session.logined) {return "login" }}
@@ -56,23 +48,18 @@ var isAuth = (req, res, next) => {
     }
 };
 
-var userSchema = new Schema();
-
-var eduuserSchema = new Schema({title: String,author: String,published_date: { type: Date, default: Date.now  }});
 var userpaperSchema = new Schema({
     name: String,owner: String,address: String,data: String,paper: String,memo: String,id: String});
-// module.exports = mongoose.model('book', bookSchema);
 var User = mongoose.model('User', userSchema);
-var EduUser = mongoose.model('Edu_User', userSchema);
-var UserPaper = mongoose.model('User_Paper', userSchema);
+var UserPaper = mongoose.model('UserPaper', userpaperSchema);
 
 app.get('/', function(req, res) {
     console.log("hello")
     });
 //-----------------signup------------------
-app.get('/signup', function(req, res) {
-    res.render('signup');
-});
+// app.get('/signup', function(req, res) {
+//     res.render('signup');
+// });
 
 app.post('/signup', function(req, res) {
     createWallet = cb => {
@@ -103,10 +90,10 @@ app.post('/signup', function(req, res) {
         });
         });
 //-----------------login------------------
-app.get('/login', function(req, res) {
-    res.render('login.html');
+// app.get('/login', function(req, res) {
+//     res.render('login.html');
     	
-});
+// });
 
 app.post('/login', function(req, res) {
     // User.find({id: req.params.id}, {_id: 0, title: 1, published_date: 1},  function(err, books){
@@ -122,24 +109,24 @@ app.post('/login', function(req, res) {
     	
 });
 //-------------admin----------------
-app.get('/admin', function(req, res){
-    if(!req.session && req.session.logined === true && req.session.user_id === admin){
-        res.render('admin_main.html');
-    } else if (req.session.logined === true && req.session.user_id !== admin){
-        res.send("You are not a admin");
-    } else {
-        res.send("not logined!");
-    }
+// app.get('/admin', function(req, res){
+//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
+//         res.render('admin_main.html');
+//     } else if (req.session.logined === true && req.session.user_id !== admin){
+//         res.send("You are not a admin");
+//     } else {
+//         res.send("not logined!");
+//     }
     	
-});
-app.get('/admin1', function(req, res){
-    if(!req.session && req.session.logined === true && req.session.user_id === admin){
-        res.render('admin_1.html');
-    } else if (req.session.logined === true && req.session.user_id !== admin){
-        res.send("You are not a admin");
-    } else {
-        res.send("not logined!");
-    }
+// });
+// app.get('/admin1', function(req, res){
+//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
+//         res.render('admin_1.html');
+//     } else if (req.session.logined === true && req.session.user_id !== admin){
+//         res.send("You are not a admin");
+//     } else {
+//         res.send("not logined!");
+//     }
     	
 });
 app.post('/admin1', function(req,res){
@@ -156,16 +143,16 @@ app.post('/admin1', function(req,res){
     });
     	
 });
-app.get('/admin2', function(req, res){
-    if(!req.session && req.session.logined === true && req.session.user_id === admin){
-        res.render('admin_2.html')
-    }else if (req.session.logined === true && req.session.user_id !== admin){
-        res.send("You are not a admin")
-    }else{
-        res.send("not logined!")
-    }
+// app.get('/admin2', function(req, res){
+//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
+//         res.render('admin_2.html')
+//     }else if (req.session.logined === true && req.session.user_id !== admin){
+//         res.send("You are not a admin")
+//     }else{
+//         res.send("not logined!")
+//     }
     	
-});
+// });
 app.post('/admin2', function(req, res){
 
     UserPaper.find(function(err, UserPapers){
@@ -179,17 +166,17 @@ app.post('/admin2/accept', function(req,res){
         res.status(204).end();
     });
 });
-app.get('/admin3', function(req, res){ //회원관리
-    if(!req.session && req.session.logined === true && req.session.user_id === admin){
-        res.render('admin_3.html')
-    }
-    else if (req.session.logined === true && req.session.user_id !== admin){
-        res.send("You are not a admin");
-    } else {
-        res.send("not logined!");
-    }
-    ;	
-});
+// app.get('/admin3', function(req, res){ //회원관리
+//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
+//         res.render('admin_3.html')
+//     }
+//     else if (req.session.logined === true && req.session.user_id !== admin){
+//         res.send("You are not a admin");
+//     } else {
+//         res.send("not logined!");
+//     }
+//     ;	
+// });
 app.post('/admin3', function(req,res){
     User.find(function(err, books){
         if(err) return res.status(500).send({error: 'database failure'});
