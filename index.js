@@ -8,6 +8,7 @@ const web3 = new Web3();
 const app = express();
 const cors = require('cors');
 const corsOptions = {origin: true,credentials: true};
+const request = require('request');
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -15,51 +16,30 @@ app.use(express.json());
 var db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
-// mongoose.connect('mongodb://localhost/mongodb_tutorial');
-mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {
-    useNewUrlParser: true
-});
+mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {useNewUrlParser: true});
 web3.setProvider(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/3c6820e798874f8ab12d8032821973de'));
-const UserSchema = new Schema({
-    company: String,
-    id: String,
-    pw: String,
-    type: String,
-    name: String,
-    email: String,
-    phone: String,
-    wallet_addr: String,
-    status: String,
-    wallet_privkey: String,
-    description: String,
-    property: {
-        eduname: String,
-        edupaper: String,
-        eduowner: String,
-        eduaddress: String,
-        eduopendate: String,
-        eduphone: String,
-    }
-});
-
+var abi= JSON.parse(fs.readFileSync(coin.json)).abi;
+var contractAddress = "0x123123"
+var tokencontract = web3.eth.Contract(abi, contractAddress);
 var transfertoken = function sendeth(privatekey,walletaddr,toaddr,value) { var rawTransaction = {"from": walletaddr,"nonce": web3.toHex(count),"gasPrice": "0x04e3b29200","gasLimit": "0x7458","to": contractAddress,"value": "0x0","data": contract.transfer.getData(toaddr, value, {from: walletaddr}),"chainId": 0x03};var privKey = new Buffer(privatekey, 'hex');var tx = new Tx(rawTransaction); tx.sign(privKey); var serializedTx = tx.serialize(); web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) { if (!err) console.log(hash);else console.log(err);});};
 var checklogin = function checklogin(){if(!req.session && req.session.logined) {return "login" }}
-
-var isAuth = (req, res, next) => {
-    if(!req.session && req.session.logined) {
-        return next();
-    }
-};
-
-var userpaperSchema = new Schema({
-    name: String,owner: String,address: String,data: String,paper: String,memo: String,id: String});
+var isAuth = (req, res, next) => {if(!req.session && req.session.logined) {return next();}};
+var UserSchema = new Schema({company: String,id: String,pw: String,type: String,name: String,email: String,phone: String,wallet_addr: String,status: String,wallet_privkey: String,description: String,userwhere:String});
+var userPaperSchema = new Schema({hash: String,owner: String,address: String,data: String,paper: String,memo: String,id: String,confirmed: String});
+var eduUserSchema = new Schema({id: String,name: String,paper: String,owner: String,address: String,opendate: String,phone: String,pw: String,confirmed: Boolean})
+var tempSchema = new Schema({dapptransaction: "String"});
+var classdataSchema = new Schema({eduName:String,description:String,teacher:String, organizer:String});
+var joinSchema = new Schema({userid:String,classname:String,classid:String,classorganizer:String});
 var User = mongoose.model('User', UserSchema);
-var UserPaper = mongoose.model('UserPaper', userpaperSchema);
-
+var UserPaper = mongoose.model('UserPaper', userPaperSchema);
+var eduUser = mongoose.model('eduUser', eduUserSchema);
+var temp = mongoose.model('temp',tempSchema);
+var classdata = mongoose.model('classdata',classdataSchema);
+var join = mongoose.model('join',joinSchema);
 app.get('/', function(req, res) {
     console.log("hello")
     });
-//-----------------signup------------------
+// -----------------signup------------------
 // app.get('/signup', function(req, res) {
 //     res.render('signup');
 // });
@@ -123,84 +103,98 @@ app.post('/login', function(req, res) {
     	
 // });
 app.get('/admin1', function(req, res){
-    User.find({status: "1" && type: "edu_user" },{id: 1, eduaddress: 1,eduname: 1,eduopendate: 1,edupaper: 1,description: 1 },(function(err, users){
+    eduUser.find({confirmed: false },{_id:1 ,id: 1,name: 1,paper: 1,owner: 1,address: 1,opendate: 1,phone: 1,pw: 0},(function(err, users){
         if(err) return res.status(500).send({error: 'database failure'});
         res.json(users);	
 }));
 });
-app.post('/admin1', function(req,res){
+app.post('/admin1/accept', function(req,res){
+    eduUser.findById(req.query.id, function(err, eduUser){
+        if(err) return res.status(500).json({ error: 'database failure' });
+        if(!eduUser) return res.status(404).json({ error: 'user not found' });
+        eduUser.confirmed = true;
+        eduUser.save(function(err){
+            if(err) res.status(500).json({error: 'failed to update'});
+            res.json({result: "ok"});
+    });
+    });
 
-    var user = new User();
-    user.eduname= req.query.name;
-    user.edupaper= req.query.edupaper;
-    user.eduaddress= req.query.eduaddress;
-    user.eduowner= req.query.eduowner;
-    user.eduaddress= req.query.eduaddress;
-    user.eduopendate= req.query.eduopendate;
-    user.eduphone= req.query.phonenumber;
-    user.save(function(err){
-        if(err){
-            console.error(err);
-            res.json({result: "error"});
-            return;
-        };
-
+    eduUser.remove({ id: req.query.id }, function(err, output){
+        if(err) return res.status(500).json({ error: "database failure" });
+        if(!output.result.n) return res.status(404).json({ error: "user not found" });
         res.json({result: "ok"});
-    });
-    });
-// app.get('/admin2', function(req, res){
-//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
-//         res.render('admin_2.html')
-//     }else if (req.session.logined === true && req.session.user_id !== admin){
-//         res.send("You are not a admin")
-//     }else{
-//         res.send("not logined!")
-//     }
-    	
-// });
-app.post('/admin2', function(req, res){
+        res.status(204).end();
+    })
+        });
+        });
 
-    UserPaper.find(function(err, UserPapers){
+app.get('/admin2', function(req, res){
+    UserPaper.find({confirmed: false },{id_:1,owner: 1,address: 1,hash: 1, data: 1,paper: 1,memo: 1,id: 1,confirmed: 0},(function(err, userPaper){
         if(err) return res.status(500).send({error: 'database failure'});
-        res.json(userpapers);
+        res.json(userPaper);	
+}));
+});
+app.post('/admin2/accpet', function(req, res){
+    UserPaper.findById(req.query.id, function(err, UserPaper){
+        if(err) return res.status(500).json({ error: 'database failure' });
+        if(!UserPaper) return res.status(404).json({ error: 'userpaper is not found' });
+        UserPaper.confirmed = true;
+        UserPaper.save(function(err){
+            if(err) res.status(500).json({error: 'failed to update'});
+            res.json({result: "ok"});
     });
 });
-app.post('/admin2/accept', function(req,res){
+app.post('/admin2/denied', function(req,res){
     UserPaper.remove({id : req.query.id} , function(err, output){
         if(err) return res.status(500).json({ error: "database failure" });
         res.status(204).end();
     });
 });
-// app.get('/admin3', function(req, res){ //회원관리
-//     if(!req.session && req.session.logined === true && req.session.user_id === admin){
-//         res.render('admin_3.html')
-//     }
-//     else if (req.session.logined === true && req.session.user_id !== admin){
-//         res.send("You are not a admin");
-//     } else {
-//         res.send("not logined!");
-//     }
-//     ;	
-// });
-app.post('/admin3', function(req,res){
-    User.find(function(err, books){
+
+app.get('/admin3', function(req,res){
+    temp.find(function(err, temps){
         if(err) return res.status(500).send({error: 'database failure'});
-        res.json(users);
+        res.json(temps);
     });
 });
-app.get('/admin4', function(req, res){
-    if(!req.session && req.session.logined === true && req.session.user_id === admin){
-        res.render('admin_4.html')
-    }else if (req.session.logined === true && req.session.user_id !== admin){
-        res.send("You are not a admin")
-    }else{
-        res.send("not logined!")
-    }
-    	
-});
-app.post('/admin3', function(req,res){
 
+app.get('/admin3/<txid>', function(req,res){
+    //dapp result print
+    });
+
+app.get('/admin3', function(req,res){
+//dapp result print
 });
+
+app.post('/admin3/new', function(req,res){
+//generate new vote dapp
+});
+
+app.get('/admin4', function(req, res){
+//token add , burn , value,transfer_from
+});
+
+app.get('/admin4/1', function(req, res){
+reqaddr = req.query.reqaddr
+res.send(Contract.methods.balanceOf(reqaddr).call())
+});
+
+app.get('/admin4/1', function(req, res){
+    reqaddr = req.query.reqaddr
+    res.send(tokencontract.methods.balanceOf(reqaddr).call() / 1e18)
+    });
+app.post('/admin4/2', function(req, res){
+        reqaddr = req.query.reqaddr
+        amount = req.query.reqaddr
+        res.send(tokencontract.methods.transfer(reqaddr,amount*1e18).call())
+    });
+app.post('/admin4/3', function(req, res{
+    request('https://api.bloxy.info/token/token_holders_list?token='+contractAddress+'&limit=30&key=ACCIzMdEWIDW2&format=structure', function (error, response, body) {
+    var a = JSON.parse(body)    
+    delete a.annotation;
+    delete a.address_type
+    res.send(a)
+})
 app.get('/admin5', function(req, res){
     if(!req.session && req.session.logined === true && req.session.user_id === admin){
         res.render('admin_4.html')
@@ -211,7 +205,7 @@ app.get('/admin5', function(req, res){
     }
     	
 });
-
+//-------------user----------------
 app.get('/logout', (req, res) => {     
     req.session.destroy();
     res.redirect('/');
@@ -219,5 +213,6 @@ app.get('/logout', (req, res) => {
   });
 
 app.listen(3000, function () {
+    console.log("하와와!")
     console.log(fs.readFileSync('startup.txt').toString());
   });
