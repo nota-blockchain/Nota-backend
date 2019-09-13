@@ -241,20 +241,27 @@ app.get('/main2', function(req,res){
         if(joins.length === 0) return res.status(404).json({error: 'joindata not found'});
         res.json(joins);
 });
+});
 app.get('/main2/:id', function(req,res){
-    classdata.find({classid: req.param.id}, { eduName: 1,description: 0,teacher: 1,organizer: 1,status: 1,date: 1,file: 1,});},  function(err, datas){
+    classdata.find({classid: req.param.id}, { classid: 1,eduName: 1,description: 0,teacher: 1,organizer: 1,status: 1,date: 1,file: 1,});},  function(err, datas){
 if(err) return res.status(500).json({error: err});
         if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
         res.json(datas);
 });
 
 app.get('/main3', function(req,res){
-    classdata.find({status: 1}, { eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
+    classdata.find({status: 1}, {     classid: 1,eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
 if(err) return res.status(500).json({error: err});
         if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
         res.json(datas);
 });
 
+app.get('/main3/:classid', function(req,res){
+    classdata.find({status: 1}, {     classid: 1,  eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
+if(err) return res.status(500).json({error: err});
+        if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
+        res.json(datas);
+});
 app.listen(3000, function () {
     console.log("하와와!");
 });
