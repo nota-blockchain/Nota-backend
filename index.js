@@ -204,12 +204,56 @@ app.post('/main1', function(req,res){
     var paper = new userPaper();
     paper.hash=req.body.hash,
     paper.ownerid=req.body.ownerid,
+    paper.status=req.body.status,
+    paper.koreanname=req.body.koreanname,
+    paper.englishname=req.body.englishname,
+    paper.birthdate=req.body.birthdate,
+    paper.mail=req.body.mail,
+    paper.phone=req.body.phone,
     paper.address=req.body.address,
-
-    var userPaperSchema = new Schema({hash: String,ownerid: String,address: String, school1: String,school2: String,school3: String,school4: String,data: String,memo: String,id: String,confirmed: String});
+    paper.school1=req.body.school1,
+    paper.school2=req.body.school2,
+    paper.school3=req.body.school3,
+    paper.work1=req.body.work1,
+    paper.work2=req.body.work2,
+    paper.work3=req.body.work3,
+    paper.army=req.body.army,
+    paper.description=req.body.description,
+    paper.save(function(err){
+        if(err){
+            console.error(err);
+            res.json({result: "error"});
+            return res.json({result: "ok"});
+    };
+    });
 })
 
+app.get('/main1', function(req,res){
+    User.find({id: req.query.id}, {company: 1,id: 0,pw: 0,type: 0,name: 1,email: 1,phone: 1,wallet_addr: 0,status: 0,wallet_privkey: 0,description: 0,userwhere: 1},  function(err, users){
+        if(err) return res.status(500).json({error: err});
+        if(users.length === 0) return res.status(404).json({error: 'User not found'});
+        res.json(users);
+    })});
 
+app.get('/main2', function(req,res){
+    join.find({userid: req.query.id}, {userid: 0,classname: 1,classid: 1,classorganizer: 1},  function(err, joins){
+        if(err) return res.status(500).json({error: err});
+        if(joins.length === 0) return res.status(404).json({error: 'joindata not found'});
+        res.json(joins);
+});
+app.get('/main2/:id', function(req,res){
+    classdata.find({classid: req.param.id}, { eduName: 1,description: 0,teacher: 1,organizer: 1,status: 1,date: 1,file: 1,});},  function(err, datas){
+if(err) return res.status(500).json({error: err});
+        if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
+        res.json(datas);
+});
+
+app.get('/main3', function(req,res){
+    classdata.find({status: 1}, { eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
+if(err) return res.status(500).json({error: err});
+        if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
+        res.json(datas);
+});
 
 app.listen(3000, function () {
     console.log("하와와!");
