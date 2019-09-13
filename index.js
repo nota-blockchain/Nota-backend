@@ -249,6 +249,7 @@ if(err) return res.status(500).json({error: err});
         res.json(datas);
 });
 
+app.post('/main2/register/:id')
 app.get('/main3', function(req,res){
     classdata.find({status: 1}, {     classid: 1,eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
 if(err) return res.status(500).json({error: err});
@@ -257,11 +258,13 @@ if(err) return res.status(500).json({error: err});
 });
 
 app.get('/main3/:classid', function(req,res){
-    classdata.find({status: 1}, {     classid: 1,  eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
-if(err) return res.status(500).json({error: err});
-        if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
-        res.json(datas);
+//수료증 출력
 });
+
+app.get('/edu1', function(req,res){
+    //
+})
+
 app.listen(3000, function () {
     console.log("하와와!");
 });
