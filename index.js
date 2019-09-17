@@ -263,28 +263,61 @@ app.get('/main2', function(req,res){
         res.json(joins);
 });
 });
-app.get('/main2/:id', function(req,res){
+app.get('/main2/view', function(req,res){
     classdata.find({classid: req.param.id}, { classid: 1,eduName: 1,description: 0,teacher: 1,organizer: 1,status: 1,date: 1,file: 1,});},  function(err, datas){
 if(err) return res.status(500).json({error: err});
         if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
         res.json(datas);
 });
 
-app.post('/main2/register/:id')
-app.get('/main3', function(req,res){
-    classdata.find({status: 1}, {     classid: 1,eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
+
+app.get('/main3', function(req,res){ // 신청
+    classdata.find({status: "1"}, {     classid: 1,eduName: 1,description: 1,teacher: 1,organizer: 1,status: 0,date: 1,file: 0,});},  function(err, datas){
 if(err) return res.status(500).json({error: err});
         if(datas.length === 0) return res.stwatus(404).json({error: 'data not found'});
         res.json(datas);
 });
 
-app.get('/main3/:classid', function(req,res){
+app.post('/main3/register/', function(req,res){
+    var join = new join();
+    join.userid=req.query.userid,
+    join.classname=req.query.classname,
+    join.classid=req.query.classid,
+    join.classorganizer=req.query.classorganizer,
+join.save(function(err){
+    if(err){
+        console.error(err);
+        res.json({result: "error"});
+        return res.json({result: "ok"});
+};
+});})
+
+app.get('/main4', function(req,res){
 //수료증 출력
 });
 
 app.get('/edu1', function(req,res){
 
     //
+})
+
+
+app.post('/edu2', function(req,res){
+    var classdata = new classdata();
+    classdata.classid=req.query.userid,//change
+    classdata.eduName=req.query.classname,
+    classdata.description=req.query.description,
+    classdata.teacher=req.query.teacher,
+    classdata.organizer=req.query.organizer,
+    classdata.price=req.query.price,
+    classdata.status="1"
+    classdata.date=req.query.date,
+classdata.save(function(err){
+    if(err){
+        console.error(err);
+        res.json({result: "error"});
+        return res.json({result: "ok"});
+};
 })
 // ------------temp------------
 app.post('/temp1', function(req,res){
