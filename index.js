@@ -6,12 +6,16 @@ const fs = require('fs');
 const Web3 = require('web3');
 const web3 = new Web3();
 const app = express();
+const filesaver = require('FileSaver');
 const cors = require('cors');
+const bodyParser = require('body-parser')
 const corsOptions = {origin: true,credentials: true};
+const xlsx = require('xlsx');
 const request = require('request');
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(bodyParser().json())
 
 var db = mongoose.connection;
 db.on('error', console.error);
@@ -198,47 +202,47 @@ app.post('/admin4/3', function(req, res){
 //-------------main----------------
 app.post('/main1', function(req,res){
     var paper = new UserPaper();
-    paper.hash= req.query.hash,
+    paper.hash= req.body.hash,
     paper.confirmed = false,
-    paper.ownerid= req.query.ownerid,
-    paper.sex=req.query.sex,
-    paper.koreanname= req.query.koreanname,
-    paper.englishname=req.query.englishname,
-    paper.birthdate= req.query.birthdate,
-    paper.mail= req.query.mail,
-    paper.phone= req.query.phone,
-    paper.address= req.query.address,
-    paper.school1.school1_name= req.query.school1_name,
-    paper.school1.school1_graduate= req.query.school1_graduate,
-    paper.school1.school1_where= req.query.school1_where,
-    paper.school1.school1_graduatedate= req.query.school1_graduatedate,
-    paper.school2.school2_name= req.query.school2_name,
-    paper.school2.school2_graduate= req.query.school2_graduate,
-    paper.school2.school2_where= req.query.school2_where,
-    paper.school2.school2_graduatedate= req.query.school1_graduatedate,
-    paper.school3.school3_name=req.query.school3_name,
-    paper.school3.school3_graduate=req.query.school3_graduate,
-    paper.school3.school3_where=req.query.school3_where,
-    paper.school3.school3_graduatedate=req.query.school3_graduatedate,
-    paper.school4.school4_name=req.query.school4_name,
-    paper.school4.school4_graduate=req.query.school4_graduate,
-    paper.school4.school4_major= req.query.school4_major,
-    paper.school4.school4_where=req.query.school4_where,
-    paper.school4.school4_graduatedate=req.query.school4_graduatedate,
-    paper.work1.work1_date=req.query.work1_date,
-    paper.work1.work1_name=req.query.work1_name,
-    paper.work1.work1_position=req.query.work1_position,
-    paper.work1.work1_majorwork=req.query.work1_majorwork,
-    paper.work2.work2_date=req.query.work2_date,
-    paper.work2.work2_name=req.query.work2_name,
-    paper.work2.work2_position=req.query.work2_position,
-    paper.work2.work2_majorwork=req.query.work2_majorwork,
-    paper.work3.work3_date=req.query.work3_date,
-    paper.work3.work3_name=req.query.work3_name,
-    paper.work3.work3_position=req.query.work3_position,
-    paper.work3.work3_majorwork=req.query.work3_majorwork,
-    paper.army=req.query.army,
-    paper.description=req.query.description,
+    paper.ownerid= req.body.ownerid,
+    paper.sex=req.body.sex,
+    paper.koreanname= req.body.koreanname,
+    paper.englishname=req.body.englishname,
+    paper.birthdate= req.body.birthdate,
+    paper.mail= req.body.mail,
+    paper.phone= req.body.phone,
+    paper.address= req.body.address,
+    paper.school1.school1_name= req.body.school1_name,
+    paper.school1.school1_graduate= req.body.school1_graduate,
+    paper.school1.school1_where= req.body.school1_where,
+    paper.school1.school1_graduatedate= req.body.school1_graduatedate,
+    paper.school2.school2_name= req.body.school2_name,
+    paper.school2.school2_graduate= req.body.school2_graduate,
+    paper.school2.school2_where= req.body.school2_where,
+    paper.school2.school2_graduatedate= req.body.school1_graduatedate,
+    paper.school3.school3_name=req.body.school3_name,
+    paper.school3.school3_graduate=req.body.school3_graduate,
+    paper.school3.school3_where=req.body.school3_where,
+    paper.school3.school3_graduatedate=req.body.school3_graduatedate,
+    paper.school4.school4_name=req.body.school4_name,
+    paper.school4.school4_graduate=req.body.school4_graduate,
+    paper.school4.school4_major= req.body.school4_major,
+    paper.school4.school4_where=req.body.school4_where,
+    paper.school4.school4_graduatedate=req.body.school4_graduatedate,
+    paper.work1.work1_date=req.body.work1_date,
+    paper.work1.work1_name=req.body.work1_name,
+    paper.work1.work1_position=req.body.work1_position,
+    paper.work1.work1_majorwork=req.body.work1_majorwork,
+    paper.work2.work2_date=req.body.work2_date,
+    paper.work2.work2_name=req.body.work2_name,
+    paper.work2.work2_position=req.body.work2_position,
+    paper.work2.work2_majorwork=req.body.work2_majorwork,
+    paper.work3.work3_date=req.body.work3_date,
+    paper.work3.work3_name=req.body.work3_name,
+    paper.work3.work3_position=req.body.work3_position,
+    paper.work3.work3_majorwork=req.body.work3_majorwork,
+    paper.army=req.body.army,
+    paper.description=req.body.description,
     paper.save(function(err){
         if(err){
             console.error(err);
@@ -296,6 +300,27 @@ app.get('/main4', function(req,res){
 //수료증 출력
 });
 
+app.get('/talk1', function(req,res){
+ // 강연자 투표
+
+ //이름,강연이름,강연정보
+})
+
+app.post('/talk2', function(req,res){
+    var talkjoin = new talkjoin();
+    talkjoin.userid=req.query.userid,
+    talkjoin.talkname=req.query.talkname,
+    talkjoin.talkid= talk.find({title: talkname}, {_id: 0, __v: 0, talker: 0, title:0, description:0})
+    talkjoin.talker=req.query.talker,
+    talkjoin.save(function(err){
+    if(err){
+        console.error(err);
+        res.json({result: "error"});
+        return res.json({result: "ok"});
+};
+});
+    
+   })
 app.get('/edu1', function(req,res){
 
     //
@@ -304,20 +329,28 @@ app.get('/edu1', function(req,res){
 
 app.post('/edu2', function(req,res){
     var classdata = new classdata();
-    classdata.classid=req.query.userid,//change
-    classdata.eduName=req.query.classname,
-    classdata.description=req.query.description,
-    classdata.teacher=req.query.teacher,
-    classdata.organizer=req.query.organizer,
-    classdata.price=req.query.price,
+    classdata.classid=req.body.classid,//change
+    classdata.eduName=req.body.classname,
+    classdata.description=req.body.description,
+    classdata.teacher=req.body.teacher,
+    classdata.organizer=req.body.organizer,
+    classdata.price=req.body.price,
     classdata.status="1"
-    classdata.date=req.query.date,
+    classdata.date=req.body.date,
+    classdata.corganizerid= req.body.corganizerid
 classdata.save(function(err){
     if(err){
         console.error(err);
         res.json({result: "error"});
         return res.json({result: "ok"});
 };
+})
+})
+app.get('/edu3', function(req,res){
+
+})
+app.post('/validate_corp', function(req,res){
+
 })
 // ------------temp------------
 app.post('/temp1', function(req,res){
@@ -344,43 +377,43 @@ app.post('/temp1', function(req,res){
 app.post('/temp2', function(req,res){
     console.log('temp2')
     var paper = new UserPaper();
-    paper.hash= req.query.hash,
-    paper.confirmed = req.query.confirmed,
-    paper.ownerid= req.query.ownerid,
-    paper.status=req.query.status,
-    paper.koreanname= req.query.koreanname,
-    paper.englishname=req.query.englishname,
-    paper.birthdate= req.query.birthdate,
-    paper.mail= req.query.mail,
-    paper.phone= req.query.phone,
-    paper.address= req.query.address,
-    paper.school1.school1_name= req.query.school1_name,
-    paper.school1.school1_graduate= req.query.school1_graduate,
-    paper.school1.school1_where= req.query.school1_where,
-    paper.school1.school1_graduatedate= req.query.school1_graduatedate,
-    paper.school2.school2_name= req.query.school2_name,
-    paper.school2.school2_graduate= req.query.school2_graduate,
-    paper.school2.school2_where= req.query.school2_where,
-    paper.school2.school2_graduatedate= req.query.school1_graduatedate,
-    paper.school3.school3_name=req.query.school3_name,
-    paper.school3.school3_graduate=req.query.school3_graduate,
-    paper.school3.school3_major= req.query.school3_major,
-    paper.school3.school3_where=req.query.school3_where,
-    paper.school3.school3_graduatedate=req.query.school3_graduatedate,
-    paper.work1.work1_date=req.query.work1_date,
-    paper.work1.work1_name=req.query.work1_name,
-    paper.work1.work1_position=req.query.work1_position,
-    paper.work1.work1_majorwork=req.query.work1_majorwork,
-    paper.work2.work2_date=req.query.work2_date,
-    paper.work2.work2_name=req.query.work2_name,
-    paper.work2.work2_position=req.query.work2_position,
-    paper.work2.work2_majorwork=req.query.work2_majorwork,
-    paper.work3.work3_date=req.query.work3_date,
-    paper.work3.work3_name=req.query.work3_name,
-    paper.work3.work3_position=req.query.work3_position,
-    paper.work3.work3_majorwork=req.query.work3_majorwork,
-    paper.army=req.query.army,
-    paper.description=req.query.description,
+    paper.hash= req.body.hash,
+    paper.confirmed = req.body.confirmed,
+    paper.ownerid= req.body.ownerid,
+    paper.status=req.body.status,
+    paper.koreanname= req.body.koreanname,
+    paper.englishname=req.body.englishname,
+    paper.birthdate= req.body.birthdate,
+    paper.mail= req.body.mail,
+    paper.phone= req.body.phone,
+    paper.address= req.body.address,
+    paper.school1.school1_name= req.body.school1_name,
+    paper.school1.school1_graduate= req.body.school1_graduate,
+    paper.school1.school1_where= req.body.school1_where,
+    paper.school1.school1_graduatedate= req.body.school1_graduatedate,
+    paper.school2.school2_name= req.body.school2_name,
+    paper.school2.school2_graduate= req.body.school2_graduate,
+    paper.school2.school2_where= req.body.school2_where,
+    paper.school2.school2_graduatedate= req.body.school1_graduatedate,
+    paper.school3.school3_name=req.body.school3_name,
+    paper.school3.school3_graduate=req.body.school3_graduate,
+    paper.school3.school3_major= req.body.school3_major,
+    paper.school3.school3_where=req.body.school3_where,
+    paper.school3.school3_graduatedate=req.body.school3_graduatedate,
+    paper.work1.work1_date=req.body.work1_date,
+    paper.work1.work1_name=req.body.work1_name,
+    paper.work1.work1_position=req.body.work1_position,
+    paper.work1.work1_majorwork=req.body.work1_majorwork,
+    paper.work2.work2_date=req.body.work2_date,
+    paper.work2.work2_name=req.body.work2_name,
+    paper.work2.work2_position=req.body.work2_position,
+    paper.work2.work2_majorwork=req.body.work2_majorwork,
+    paper.work3.work3_date=req.body.work3_date,
+    paper.work3.work3_name=req.body.work3_name,
+    paper.work3.work3_position=req.body.work3_position,
+    paper.work3.work3_majorwork=req.body.work3_majorwork,
+    paper.army=req.body.army,
+    paper.description=req.body.description,
     paper.save(function(err){
         if(err){
             console.error(err);
@@ -388,7 +421,18 @@ app.post('/temp2', function(req,res){
             return res.json({result: "ok"});
     };
     });
-})
+    // var workbook = xlsx.readFile('excel_file_01.xlsx');
+    // var first_sheet_name = workbook.SheetNames[0];
+    // xlsx.utils.sheet_add_json(ws, [{ A: 1, B: 2 }, { A: 2, B: 3 }, { A: 3, B: 4 }], {skipHeader: true, origin: "A2"});
+    // xlsx.writeFile(paper, '~/userpaper/'+username+".xlsx");
+});
+
+app.post('/writeresume', function(req,res){
+if("리라" == req.body.school1_name){
+    return res.json({result: "ok"})
+}
+});
+
 app.listen(3000, function () {
     console.log("하와와!");
     
