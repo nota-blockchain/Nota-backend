@@ -428,11 +428,40 @@ app.post('/temp2', function(req,res){
 });
 
 app.post('/writeresume', function(req,res){
-if("리라" == req.body.school1_name){
     return res.json({result: "ok"})
-}
 });
 
+app.get('/resumeresult', function(req,res){
+    return res.json({pdfurl:"https://github.com/cokia", downloadurl:"https://hanukoon.com"})
+})
+
+app.get('/vote', function(req,res){
+    return res.json({candi1_name:"홍길동",
+    candi1_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    candi2_name:"홍길동",
+    candi2_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    candi3_name:"홍길동",
+    candi3_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    candi4_name:"홍길동",
+    candi4_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    candi5_name:"홍길동",
+    candi5_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    })
+})
+app.post('/vote', function(req,res){
+    check = req.query.number;
+    return res.json({check: check,})
+})
+
+app.get('/voteresult', function(req,res){
+    return res.json({candi1:"10%",
+    candi2:"20%",
+    candi3:"40%",
+    candi4:"50%",
+    candi5:"60%",
+    allvoter:"300",
+    etherscan:"https://etherscan.io",})
+})
 app.listen(3000, function () {
     console.log("하와와!");
     
