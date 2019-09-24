@@ -9,13 +9,11 @@ const app = express();
 const filesaver = require('FileSaver');
 const cors = require('cors');
 const bodyParser = require('body-parser')
-const corsOptions = {origin: true,credentials: true};
 const xlsx = require('xlsx');
 const request = require('request');
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
-app.use(bodyParser().json())
 
 var db = mongoose.connection;
 db.on('error', console.error);
@@ -436,17 +434,28 @@ app.get('/resumeresult', function(req,res){
 })
 
 app.get('/vote', function(req,res){
-    return res.json({candi1_name:"홍길동",
-    candi1_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
-    candi2_name:"홍길동",
-    candi2_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
-    candi3_name:"홍길동",
-    candi3_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
-    candi4_name:"홍길동",
-    candi4_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
-    candi5_name:"홍길동",
-    candi5_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
-    })
+    const peoples = [];
+    for(let i = 0; i <= 5; i ++) {
+        peoples.push({
+            name: '홍길동',
+            affiliation: i,
+            academicBackground: '하버드 컴공과',
+            title: '블록체인 핵심이론',
+            article: 'UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.'
+        });
+    }
+    return res.json(peoples)
+    // return res.json({candi1_name:"홍길동",
+    // candi1_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  ",
+    // candi2_name:"홍길동",
+    // candi2_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    // candi3_name:"홍길동",
+    // candi3_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    // candi4_name:"홍길동",
+    // candi4_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    // candi5_name:"홍길동",
+    // candi5_data:"소속: 삼성전자 연구원\n학력 : 하버드 컴공과\n제목: 블록체인핵심이론\n설명:  UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.",
+    // })
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
