@@ -12,6 +12,7 @@ const bodyParser = require('body-parser')
 const xlsx = require('xlsx');
 const request = require('request');
 const ejs = require('ejs');
+const peoples = [];
 app.use(cors());
 app.use(express.json());
 
@@ -20,12 +21,12 @@ db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
 mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {useNewUrlParser: true});
 web3.setProvider(new Web3.providers.HttpProvider('49.247.215.220'));
-var tokenabi = JSON.parse(fs.readFileSync("tokenabi.json")).abi;
-var votedappabi = JSON.parse(fs.readFileSync("notaabi.json")).abi;
+var tokenabi = JSON.parse(fs.readFileSync("tokenabi.json"));
+var votedappabi = JSON.parse(fs.readFileSync("notaabi.json"));
 var tokenAddress = "0x8941aec64f500e52593cdc94fdb997540d65f1e0";
 var votedappAddress = "0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79"
-// var tokencontract = new web3.eth.Contract(tokenabi,tokenAddress)
-// var votedappcontract = new web3.eth.Contract(votedappabi,votedappAddress)
+var tokencontract = new web3.eth.Contract(tokenabi,tokenAddress)
+var votedappcontract = new web3.eth.Contract(votedappabi,votedappAddress)
 var transfertoken = function sendeth(privatekey,walletaddr,toaddr,value) { var rawTransaction = {"from": walletaddr,"nonce": web3.toHex(count),"gasPrice": "0x04e3b29200","gasLimit": "0x7458","to": contractAddress,"value": "0x0","data": contract.transfer.getData(toaddr, value, {from: walletaddr}),"chainId": 0x03};var privKey = new Buffer(privatekey, 'hex');var tx = new Tx(rawTransaction); tx.sign(privKey); var serializedTx = tx.serialize(); web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) { if (!err) console.log(hash);else console.log(err);});};
 var UserSchema = new Schema({company: String,id: String,pw: String,type: String,name: String,email: String,phone: String,wallet_addr: String,status: String,wallet_privkey: String,description: String,userwhere:String});
 var userPaperSchema = new Schema({hash:String,confirmed:Boolean,ownerid:String,sex:String,koreanname:String,englishname:String,birthdate:String,mail:String,phone:String,address:String,school1:{school1_name:String,school1_graduate:String,school1_where:String,school1_graduatedate:String},school2:{school2_name:String,school2_graduate:String,school2_where:String,school2_graduatedate:String},school3:{school3_name:String,school3_graduate:String,school3_where:String,school3_graduatedate:String},school4:{school4_name:String,school4_graduate:String,school4_major:String,school4_where:String,school4_graduatedate:String},work1:{work1_date:String,work1_name:String,work1_position:String,work1_majorwork:String},work2:{work2_date:String,work2_name:String,work2_position:String,work2_majorwork:String},work3:{work3_date:String,work3_name:String,work3_position:String,work3_majorwork:String},army:Boolean,description:String});var eduUserSchema=new Schema({id:String,name:String,paper:String,owner:String,address:String,opendate:String,phone:String,pw:String,confirmed:Boolean});
@@ -430,55 +431,6 @@ app.post('/temp2', function(req,res){
 //------------
 
 app.get('/pdf/:id', function(req, res){
-    // ejs.renderFile('./templete.ejs', {
-        // kr_username: '엄다니엘',
-        // en_username: 'danieluhm',
-        // birthday_year: '2004',
-        // birthday_month: '11',
-        // birthday_day: '19',
-        // birthday_older: '14',
-    //     gender: '남',
-    //     home_1: '010',
-    //     home_2: '9563',
-    //     home_3: '7570',
-    //     phone_1: '010',
-    //     phone_2: '9563',
-    //     phone_3: '7570',
-    //     address: '경기도 화성시 동탄청계로 303-13, 1113동 401호(청계동, 신안인스빌 리베라 2차)',
-    //     gunin: '아니오',
-    //     email: 'danal@cloudus.io',
-    //     school1: '하귀일초등학교',
-    //     school2: '귀일중학교',
-    //     school3: '검정고시',
-    //     school4: '고오려사이버대학교',
-    //     school1_address: '제주특별자치도',
-    //     school2_address: '제주특별자치도',
-    //     school3_address: '제주특별자치도',
-    //     school4_address: '제주특별자치도',
-    //     school1_major: '제주좆',
-    //     school2_major: '제주좆',
-    //     school3_major: '솔로좆',
-    //     school4_major: '경영학과',
-    //     school1_start_year: '2011',
-    //     school2_start_year: '2011',
-    //     school3_start_year: '2011',
-    //     school4_start_year: '2011',
-    //     school1_start_month: '11',
-    //     school2_start_month: '11',
-    //     school3_start_month: '11',
-    //     school4_start_month: '11',
-    //     school1_end_year: '2011',
-    //     school2_end_year: '2011',
-    //     school3_end_year: '2011',
-    //     school4_end_year: '2011',
-    //     school1_end_month: '11',
-    //     school2_end_month: '11',
-    //     school3_end_month: '11',
-    //     school4_end_month: '11',
-    // }, {}, function(err, str){
-    //     if(err) throw err;
-    //     res.send(str);
-    // });
 
     if(req.query.download === '') {
         res.setHeader('Content-disposition', 'attachment; filename=nota.pdf');
@@ -502,38 +454,43 @@ app.get('/resumeresult', function(req,res){
 })
 
 app.get('/vote', function(req,res){
-    const peoples = [];
+
         peoples.push({
+            id:0,
             name: 'James Lee',
-            affiliation: 0,
+            affiliation: 'A company',
             academicBackground: 'computer science course in Harvard University',
             title: 'Blockchain Core Theory',
             article: 'Best lectures with experience in leading companies and publishing multiple books.'
         });
         peoples.push({
+            id:1,
             name: 'Mark Kim',
-            affiliation: 1,
+            affiliation: 'B company',
             academicBackground: 'political science course in Princeton University',
             title: 'Blockchain and Political',
             article: 'In relation to the political issues concerning blockchain, valuable papers have been published in numerous forums and are thus evaluated as a blockchain expert in a new era.'
         });
         peoples.push({
+            id:2,
             name: 'Jun Park',
-            affiliation: 2,
+            affiliation: 'C company',
             academicBackground: 'psychology course in Yale University',
             title: 'Blockchain and Human Psychology',
             article: 'He has written and lectured countless books and lectures on human psychology, earning a reputation for high levels of participant-friendly lectures and an innovative view of blockchain.'
         });
         peoples.push({
+            id:3,
             name: 'Yuna Lim',
-            affiliation: 3,
+            affiliation: 'D company'
             academicBackground: 'mba in Columbia University',
             title: 'Blockchain Strategy',
             article: 'It combines the technical and theoretical aspects of blockchain and is praised by many for organizing it through a more advanced curriculum.'
         });
         peoples.push({
+            id:4,
             name: 'Olivia Ha',
-            affiliation: 4,
+            affiliation: 'E company',
             academicBackground: 'science technology and society in Stanford University',
             title: 'Blockchain and Society',
             article: 'In society, he has taught mainly what science and technology is, especially as a lecturer who is recognized by many as a popular lecturer for his high-quality lectures on blockchain, and his excellent speech and knowledge are affecting many.'
@@ -543,18 +500,18 @@ app.get('/vote', function(req,res){
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
-    // votedappcontract.method.vote(Peoples.filter(key => key.affiliation == check));
-    return res.json({check: check,})
+    votedappcontract.method.vote(peoples.filter(key => key.affiliation == check)).call({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
+    return res.json({result: ok,})
 
 })
 
 app.get('/voteresult', function(req,res){
     return res.json({
-    // candi1:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
-    // candi2:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 1)].voteCount.call(),
-    // candi3:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 2)].voteCount.call(),
-    // candi4:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
-    // candi5:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
+    candi1:votedappcontract.canididates[peoples.filter(key => key.id == 0)].voteCount.call(),
+    candi2:votedappcontract.canididates[peoples.filter(key => key.id == 1)].voteCount.call(),
+    candi3:votedappcontract.canididates[peoples.filter(key => key.id == 2)].voteCount.call(),
+    candi4:votedappcontract.canididates[peoples.filter(key => key.id == 0)].voteCount.call(),
+    candi5:votedappcontract.canididates[peoples.filter(key => key.id == 0)].voteCount.call(),
     etherscan:"https://etherscan.io",})
 })
 app.listen(3000, function () {
