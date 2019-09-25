@@ -15,7 +15,7 @@ const ejs = require('ejs');
 const peoples = [];
 app.use(cors());
 app.use(express.json());
-
+const paper = [] ;
 var db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
@@ -446,6 +446,29 @@ app.post('/generate', (req, res) => {
 });
 
 app.post('/writeresume', function(req,res){
+    paper.push({
+        school1_name : req.body.school1, //"리라"(초등학교)
+        school1_graduatedate : req.body.scholl1Date, //졸업날
+        school2_name : req.body.school2, //"가온"(중학교)
+        school2_graduatedate : req.body.school2Date,
+        school3_name : req.body.school3, //"누리"(고등학교)
+        school3_graduatedate : req.body.school3Date,
+        school4_name : req.body.school4,//"서울"(대학교)
+        school4_major : req.body.school4Depart,//전공학과
+        school4_graduatedate : req.body.school4Date, //재학중인 경우 0, 졸업일 경우 YYYYMMDD
+        work1_date : req.body.work1Date, //yymmyymm
+        work1_name : req.body.work1Name,
+        work1_position : req.body.work1Position,
+        work1_majorwork : req.body.work1Majorwork,
+        work2_date : req.body.work2Date, //yymmyymm
+        work2_name : req.body.work2Name,
+        work2_position : req.body.work2Position,
+        work2_majorwork : req.body.work2Majorwork,
+        work3_date : req.body.work3Date,//yymmyymm
+        work3_name : req.body.work3Name,
+        work3_position : req.body.work3Position,
+        work3_majorwork : req.body.work3Majorwork,
+    })
     return res.json({result: "ok"})
 });
 
