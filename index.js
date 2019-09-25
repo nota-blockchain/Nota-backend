@@ -454,7 +454,7 @@ app.get('/resumeresult', function(req,res){
 })
 
 app.get('/vote', function(req,res){
-
+    const peoples = [];
         peoples.push({
             id:0,
             name: 'James Lee',
