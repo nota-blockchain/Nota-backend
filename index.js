@@ -11,6 +11,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser')
 const xlsx = require('xlsx');
 const request = require('request');
+const ejs = require('ejs');
 
 app.use(cors());
 app.use(express.json());
@@ -423,6 +424,63 @@ app.post('/temp2', function(req,res){
     // var first_sheet_name = workbook.SheetNames[0];
     // xlsx.utils.sheet_add_json(ws, [{ A: 1, B: 2 }, { A: 2, B: 3 }, { A: 3, B: 4 }], {skipHeader: true, origin: "A2"});
     // xlsx.writeFile(paper, '~/userpaper/'+username+".xlsx");
+});
+
+app.get('/pdf', (req, res) => {
+    // ejs.renderFile('./templete.ejs', {
+    //     kr_username: '엄다니엘',
+    //     en_username: 'danieluhm',
+    //     birthday_year: '2004',
+    //     birthday_month: '11',
+    //     birthday_day: '19',
+    //     birthday_older: '14',
+    //     gender: '남',
+    //     home_1: '010',
+    //     home_2: '9563',
+    //     home_3: '7570',
+    //     phone_1: '010',
+    //     phone_2: '9563',
+    //     phone_3: '7570',
+    //     address: '경기도 화성시 동탄청계로 303-13, 1113동 401호(청계동, 신안인스빌 리베라 2차)',
+    //     gunin: '아니오',
+    //     email: 'danal@cloudus.io',
+    //     school1: '하귀일초등학교',
+    //     school2: '귀일중학교',
+    //     school3: '검정고시',
+    //     school4: '고오려사이버대학교',
+    //     school1_address: '제주특별자치도',
+    //     school2_address: '제주특별자치도',
+    //     school3_address: '제주특별자치도',
+    //     school4_address: '제주특별자치도',
+    //     school1_major: '제주좆',
+    //     school2_major: '제주좆',
+    //     school3_major: '솔로좆',
+    //     school4_major: '경영학과',
+    //     school1_start_year: '2011',
+    //     school2_start_year: '2011',
+    //     school3_start_year: '2011',
+    //     school4_start_year: '2011',
+    //     school1_start_month: '11',
+    //     school2_start_month: '11',
+    //     school3_start_month: '11',
+    //     school4_start_month: '11',
+    //     school1_end_year: '2011',
+    //     school2_end_year: '2011',
+    //     school3_end_year: '2011',
+    //     school4_end_year: '2011',
+    //     school1_end_month: '11',
+    //     school2_end_month: '11',
+    //     school3_end_month: '11',
+    //     school4_end_month: '11',
+    // }, {}, function(err, str){
+    //     if(err) throw err;
+    //     res.send(str);
+    // });
+
+    if(req.query.download === '') {
+        res.setHeader('Content-disposition', 'attachment; filename=nota.pdf');
+    }
+    return fs.createReadStream('nota-paper.pdf').pipe(res);
 });
 
 app.post('/writeresume', function(req,res){
