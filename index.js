@@ -482,7 +482,7 @@ app.get('/vote', function(req,res){
         peoples.push({
             id:3,
             name: 'Yuna Lim',
-            affiliation: 'D company'
+            affiliation: 'D company',
             academicBackground: 'mba in Columbia University',
             title: 'Blockchain Strategy',
             article: 'It combines the technical and theoretical aspects of blockchain and is praised by many for organizing it through a more advanced curriculum.'
