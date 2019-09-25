@@ -429,7 +429,7 @@ app.post('/temp2', function(req,res){
 });
 //------------
 
-app.get('/pdf', function(req, res){
+app.get('/pdf/:id', function(req, res){
     // ejs.renderFile('./templete.ejs', {
         // kr_username: '엄다니엘',
         // en_username: 'danieluhm',
@@ -483,7 +483,14 @@ app.get('/pdf', function(req, res){
     if(req.query.download === '') {
         res.setHeader('Content-disposition', 'attachment; filename=nota.pdf');
     }
-    return fs.createReadStream('nota-paper.pdf').pipe(res);
+    return fs.createReadStream(req.params.id + '.pdf').pipe(res);
+});
+
+app.post('/generate', (req, res) => {
+    res.json({
+        opcode: 'success',
+        generateKey: 'exampleGenerateKey'
+    });
 });
 
 app.post('/writeresume', function(req,res){
