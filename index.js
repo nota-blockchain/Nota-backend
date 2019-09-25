@@ -20,8 +20,8 @@ db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
 mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {useNewUrlParser: true});
 web3.setProvider(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/3c6820e798874f8ab12d8032821973de'));
-var tokenabi = JSON.parse(fs.readFileSync(tokenabi.json)).abi;
-var votedappabi = JSON.parse(fs.readFileSync(notaabi.json)).abi;
+var tokenabi = JSON.parse(fs.readFileSync("tokenabi.json")).abi;
+var votedappabi = JSON.parse(fs.readFileSync("notaabi.json")).abi;
 var tokenAddress = "0x8941aec64f500e52593cdc94fdb997540d65f1e0";
 var votedappAddress = "0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79"
 var tokencontract = new web3.eth.Contract(tokenabi,tokenAddress)
