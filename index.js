@@ -530,11 +530,11 @@ app.post('/vote', function(req,res){
 
 app.get('/voteresult', function(req,res){
     return res.json({
-    candi1:votedappcontract.canididates([peoples.filter(key => key.__v == 0)]).voteCount.call(),    
-    candi2:votedappcontract.canididates([peoples.filter(key => key.__v == 1)]).voteCount.call(),
-    candi3:votedappcontract.canididates([peoples.filter(key => key.__v == 2)]).voteCount.call(),
-    candi4:votedappcontract.canididates([peoples.filter(key => key.__v == 3)]).voteCount.call(),
-    candi5:votedappcontract.canididates([peoples.filter(key => key.__v == 4)]).voteCount.call(),
+    candi1:votedappcontract.canididates(peoples[check].name).voteCount.call(),    
+    candi2:votedappcontract.canididates(peoples[check].name).voteCount.call(),
+    candi3:votedappcontract.canididates(peoples[check].name).voteCount.call(),
+    candi4:votedappcontract.canididates(peoples[check].name).voteCount.call(),
+    candi5:votedappcontract.canididates(peoples[check].name).voteCount.call(),
     etherscan:"https://etherscan.io",})
 })
 app.listen(3000, function () {
