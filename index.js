@@ -456,7 +456,7 @@ app.get('/resumeresult', function(req,res){
 app.get('/vote', function(req,res){
     const peoples = [];
         peoples.push({
-            id:0,
+            __v:0,
             name: 'James Lee',
             affiliation: 'A company',
             academicBackground: 'computer science course in Harvard University',
@@ -464,7 +464,7 @@ app.get('/vote', function(req,res){
             article: 'Best lectures with experience in leading companies and publishing multiple books.'
         });
         peoples.push({
-            id:1,
+            __v:1,
             name: 'Mark Kim',
             affiliation: 'B company',
             academicBackground: 'political science course in Princeton University',
@@ -472,7 +472,7 @@ app.get('/vote', function(req,res){
             article: 'In relation to the political issues concerning blockchain, valuable papers have been published in numerous forums and are thus evaluated as a blockchain expert in a new era.'
         });
         peoples.push({
-            id:2,
+            __v:2,
             name: 'Jun Park',
             affiliation: 'C company',
             academicBackground: 'psychology course in Yale University',
@@ -480,7 +480,7 @@ app.get('/vote', function(req,res){
             article: 'He has written and lectured countless books and lectures on human psychology, earning a reputation for high levels of participant-friendly lectures and an innovative view of blockchain.'
         });
         peoples.push({
-            id:3,
+            __v:3,
             name: 'Yuna Lim',
             affiliation: 'D company',
             academicBackground: 'mba in Columbia University',
@@ -488,7 +488,7 @@ app.get('/vote', function(req,res){
             article: 'It combines the technical and theoretical aspects of blockchain and is praised by many for organizing it through a more advanced curriculum.'
         });
         peoples.push({
-            id:4,
+            __v:4,
             name: 'Olivia Ha',
             affiliation: 'E company',
             academicBackground: 'science technology and society in Stanford University',
