@@ -500,7 +500,7 @@ app.get('/vote', function(req,res){
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
-    votedappcontract.method.vote(peoples.filter(key => key.affiliation == check)).call({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
+    votedappcontract().vote.call(peoples[check].name)({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
     return res.json({result: ok,})
 
 })
