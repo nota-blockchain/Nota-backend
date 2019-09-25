@@ -11,9 +11,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser')
 const xlsx = require('xlsx');
 const request = require('request');
-const fs = require('fs');
 const ejs = require('ejs');
-
 app.use(cors());
 app.use(express.json());
 
@@ -181,8 +179,8 @@ app.get('/admin4/1', function(req, res){
     // console.log(reqaddr);
     balance = tokencontract.methods.balanceOf(reqaddr).call() .then(function (result) {
         var tokensWei = result;
-        tokensWei = tokensWei / 1e18
-        res.send(String(tokensWei))
+        tokensWei = tokensWei / 1e18;
+        res.send(String(tokensWei));
         });
     });
     // console.log(balance);
@@ -429,15 +427,16 @@ app.post('/temp2', function(req,res){
     // xlsx.utils.sheet_add_json(ws, [{ A: 1, B: 2 }, { A: 2, B: 3 }, { A: 3, B: 4 }], {skipHeader: true, origin: "A2"});
     // xlsx.writeFile(paper, '~/userpaper/'+username+".xlsx");
 });
+//------------
 
-app.get('/pdf', (req, res) => {
-    // ejs.renderFile('./templete.ejs', {
-    //     kr_username: '엄다니엘',
-    //     en_username: 'danieluhm',
-    //     birthday_year: '2004',
-    //     birthday_month: '11',
-    //     birthday_day: '19',
-    //     birthday_older: '14',
+app.get('/pdf', function(req, res){
+    ejs.renderFile('./templete.ejs', {
+        // kr_username: '엄다니엘',
+        // en_username: 'danieluhm',
+        // birthday_year: '2004',
+        // birthday_month: '11',
+        // birthday_day: '19',
+        // birthday_older: '14',
     //     gender: '남',
     //     home_1: '010',
     //     home_2: '9563',
@@ -479,8 +478,7 @@ app.get('/pdf', (req, res) => {
     // }, {}, function(err, str){
     //     if(err) throw err;
     //     res.send(str);
-    // });
-
+    })
     if(req.query.download === '') {
         res.setHeader('Content-disposition', 'attachment; filename=nota.pdf');
     }
@@ -497,29 +495,58 @@ app.get('/resumeresult', function(req,res){
 
 app.get('/vote', function(req,res){
     const peoples = [];
-    for(let i = 0; i <= 4; i ++) {
         peoples.push({
-            name: '홍길동',
-            affiliation: i,
-            academicBackground: '하버드 컴공과',
-            title: '블록체인 핵심이론',
-            article: 'UBS, Credit Suisse, IHS Markit 등 15개 글로벌 금융회사를 대상으로 최종 시스템을 출시하였으며 이번 달 테스트 단계가 끝날 경우 어떤 결과를 가져오고 이어질지 논의하고자 합니다.'
+            name: 'James Lee',
+            affiliation: 0,
+            academicBackground: 'computer science course in Harvard University',
+            title: 'Blockchain Core Theory',
+            article: 'Best lectures with experience in leading companies and publishing multiple books.'
         });
-    }
+        peoples.push({
+            name: 'Mark Kim',
+            affiliation: 1,
+            academicBackground: 'political science course in Princeton University',
+            title: 'Blockchain and Political',
+            article: 'In relation to the political issues concerning blockchain, valuable papers have been published in numerous forums and are thus evaluated as a blockchain expert in a new era.'
+        });
+        peoples.push({
+            name: 'Jun Park',
+            affiliation: 2,
+            academicBackground: 'psychology course in Yale University',
+            title: 'Blockchain and Human Psychology',
+            article: 'He has written and lectured countless books and lectures on human psychology, earning a reputation for high levels of participant-friendly lectures and an innovative view of blockchain.'
+        });
+        peoples.push({
+            name: 'Yuna Lim',
+            affiliation: 3,
+            academicBackground: 'mba in Columbia University',
+            title: 'Blockchain Strategy',
+            article: 'It combines the technical and theoretical aspects of blockchain and is praised by many for organizing it through a more advanced curriculum.'
+        });
+        peoples.push({
+            name: 'Olivia Ha',
+            affiliation: 4,
+            academicBackground: 'science technology and society in Stanford University',
+            title: 'Blockchain and Society',
+            article: 'In society, he has taught mainly what science and technology is, especially as a lecturer who is recognized by many as a popular lecturer for his high-quality lectures on blockchain, and his excellent speech and knowledge are affecting many.'
+        });
+
     return res.json(peoples)
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
+    votedappcontract.method.vote(Peoples.filter(key => key.affiliation == check));
     return res.json({check: check,})
+
 })
 
 app.get('/voteresult', function(req,res){
-    return res.json({candi1:"10%",
-    candi2:"20%",
-    candi3:"40%",
-    candi4:"50%",
-    candi5:"60%",
-    allvoter:"300",
+    return res.json({
+    candi1:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
+    candi2:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 1)].voteCount.call(),
+    candi3:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 2)].voteCount.call(),
+    candi4:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
+    candi5:votedappcontract.canididates[Peoples.filter(key => key.affiliation == 0)].voteCount.call(),
     etherscan:"https://etherscan.io",})
 })
 app.listen(3000, function () {
