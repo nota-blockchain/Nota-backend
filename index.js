@@ -6,12 +6,8 @@ const fs = require('fs');
 const Web3 = require('web3');
 const web3 = new Web3();
 const app = express();
-const filesaver = require('FileSaver');
 const cors = require('cors');
-const bodyParser = require('body-parser')
-const xlsx = require('xlsx');
 const request = require('request');
-const ejs = require('ejs');
 const peoples = [];
 const md5 = require('md5');
 app.use(cors());
@@ -44,6 +40,7 @@ var eduUser = mongoose.model('eduUser', eduUserSchema);
 var temp = mongoose.model('temp',tempSchema);
 var classdata = mongoose.model('classdata',classdataSchema);
 var join = mongoose.model('join',joinSchema);
+app.use(session());
 app.get('/', function(req, res) {
     console.log("hello")    
     });
@@ -421,6 +418,8 @@ app.post('/temp2', function(req,res){
     paper.work3.work3_majorwork=req.body.work3_majorwork,
     paper.army=req.body.army,
     paper.description=req.body.description,
+    req.session.paper = paper;
+
     paper.save(function(err){
         if(err){
             console.error(err);
@@ -475,6 +474,7 @@ app.post('/writeresume', function(req,res){
         work3_majorwork : req.body.work3Majorwork,
         md5 : md5(req.body)
     })
+    req.sessio.paper = paper;
     paperdappcontract.set_all(paperid,md5(req.body))
     return res.json({result: "ok"})
 });
