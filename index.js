@@ -10,9 +10,10 @@ const cors = require('cors');
 const request = require('request');
 const peoples = [];
 const md5 = require('md5');
+
 app.use(cors());
 app.use(express.json());
-const paper = [] ;
+const papers = [] ;
 var db = mongoose.connection;
 var check = 0;
 db.on('error', console.error);
@@ -40,7 +41,9 @@ var eduUser = mongoose.model('eduUser', eduUserSchema);
 var temp = mongoose.model('temp',tempSchema);
 var classdata = mongoose.model('classdata',classdataSchema);
 var join = mongoose.model('join',joinSchema);
-app.use(session());
+app.use(session({
+    secret: 'HawawaYooWoungJJang'
+}));
 app.get('/', function(req, res) {
     console.log("hello")    
     });
@@ -450,7 +453,10 @@ app.post('/generate', (req, res) => {
 });
 
 app.post('/writeresume', function(req,res){
-    paper.push({
+    const paper = {
+        username: req.body.username,
+        usernameEn: req.body.usernameEn,
+
         school1_name : req.body.school1, //"리라"(초등학교)
         school1_graduatedate : req.body.scholl1Date, //졸업날
         school2_name : req.body.school2, //"가온"(중학교)
@@ -473,9 +479,11 @@ app.post('/writeresume', function(req,res){
         work3_position : req.body.work3Position,
         work3_majorwork : req.body.work3Majorwork,
         md5 : md5(req.body)
-    })
+    };
+
+    papers.push(paper)
     req.session.paper = paper;
-    paperdappcontract.set_all(paperid,md5(req.body))
+    // paperdappcontract.set_all(paperid,md5(req.body))
     return res.json({result: "ok"})
 });
 
@@ -542,11 +550,11 @@ app.post('/vote', function(req,res){
 
 app.get('/voteresult', function(req,res){
     return res.json({
-    candi1:votedappcontract.canididates(peoples[check].name).voteCount.call(),    
-    candi2:votedappcontract.canididates(peoples[check].name).voteCount.call(),
-    candi3:votedappcontract.canididates(peoples[check].name).voteCount.call(),
-    candi4:votedappcontract.canididates(peoples[check].name).voteCount.call(),
-    candi5:votedappcontract.canididates(peoples[check].name).voteCount.call(),
+    candi1:votedappcontract.canididates["James Lee"].voteCount.call(),    
+    candi2:votedappcontract.canididates["Mark Kim"].voteCount.call(),
+    candi3:votedappcontract.canididates["Jun Park"].voteCount.call(),
+    candi4:votedappcontract.canididates["Yuna Lim"].voteCount.call(),
+    candi5:votedappcontract.canididates["Olivia Ha"].voteCount.call(),
     etherscan:"https://etherscan.io/address/0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79",})
 })
 app.listen(3000, function () {
