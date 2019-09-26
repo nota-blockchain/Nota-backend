@@ -474,7 +474,7 @@ app.post('/writeresume', function(req,res){
         work3_majorwork : req.body.work3Majorwork,
         md5 : md5(req.body)
     })
-    req.sessio.paper = paper;
+    req.session.paper = paper;
     paperdappcontract.set_all(paperid,md5(req.body))
     return res.json({result: "ok"})
 });
