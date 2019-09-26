@@ -13,10 +13,12 @@ const xlsx = require('xlsx');
 const request = require('request');
 const ejs = require('ejs');
 const peoples = [];
+const md5 = require('md5');
 app.use(cors());
 app.use(express.json());
 const paper = [] ;
 var db = mongoose.connection;
+var check = 0;
 db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
 mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {useNewUrlParser: true});
@@ -468,6 +470,7 @@ app.post('/writeresume', function(req,res){
         work3_name : req.body.work3Name,
         work3_position : req.body.work3Position,
         work3_majorwork : req.body.work3Majorwork,
+        md5 : md5(req.body)
     })
     return res.json({result: "ok"})
 });
@@ -523,7 +526,7 @@ app.get('/vote', function(req,res){
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
-    votedappcontract().vote.call(peoples[check].name)({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
+    votedappcontract.vote.call(peoples[check].name)({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
     return res.json({result: ok,})
 
 })
