@@ -1,7 +1,7 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const doc = new PDFDocument;
-
+const uuid
 let HEIGHT = 0;
 doc.image('./nota.jpg', -120, -40, {
     fit: [850, 850],
