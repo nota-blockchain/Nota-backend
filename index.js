@@ -22,13 +22,16 @@ var check = 0;
 db.on('error', console.error);
 db.once('open', () => console.log(fs.readFileSync('mongo.txt').toString()));
 mongoose.connect('mongodb://docker.cloudus.io:32770/mongodb_tutorial', {useNewUrlParser: true});
-web3.setProvider(new Web3.providers.HttpProvider('49.247.215.220'));
+web3.setProvider(new Web3.providers.HttpProvider('112.161.27.56'));
 var tokenabi = JSON.parse(fs.readFileSync("tokenabi.json"));
 var votedappabi = JSON.parse(fs.readFileSync("notaabi.json"));
+var paperdappabi = JSON.parse(fs.readFileSync("paperabi.json"));
 var tokenAddress = "0x8941aec64f500e52593cdc94fdb997540d65f1e0";
 var votedappAddress = "0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79"
+var paperdappAddress = "0xf9c3A6d486f88630B97cc532A234eddbe475c36d"
 var tokencontract = new web3.eth.Contract(tokenabi,tokenAddress)
 var votedappcontract = new web3.eth.Contract(votedappabi,votedappAddress)
+var paperdappcontract = new web3.eth.Contract(paperdappabi, paperdappAddress)
 var transfertoken = function sendeth(privatekey,walletaddr,toaddr,value) { var rawTransaction = {"from": walletaddr,"nonce": web3.toHex(count),"gasPrice": "0x04e3b29200","gasLimit": "0x7458","to": contractAddress,"value": "0x0","data": contract.transfer.getData(toaddr, value, {from: walletaddr}),"chainId": 0x03};var privKey = new Buffer(privatekey, 'hex');var tx = new Tx(rawTransaction); tx.sign(privKey); var serializedTx = tx.serialize(); web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) { if (!err) console.log(hash);else console.log(err);});};
 var UserSchema = new Schema({company: String,id: String,pw: String,type: String,name: String,email: String,phone: String,wallet_addr: String,status: String,wallet_privkey: String,description: String,userwhere:String});
 var userPaperSchema = new Schema({hash:String,confirmed:Boolean,ownerid:String,sex:String,koreanname:String,englishname:String,birthdate:String,mail:String,phone:String,address:String,school1:{school1_name:String,school1_graduate:String,school1_where:String,school1_graduatedate:String},school2:{school2_name:String,school2_graduate:String,school2_where:String,school2_graduatedate:String},school3:{school3_name:String,school3_graduate:String,school3_where:String,school3_graduatedate:String},school4:{school4_name:String,school4_graduate:String,school4_major:String,school4_where:String,school4_graduatedate:String},work1:{work1_date:String,work1_name:String,work1_position:String,work1_majorwork:String},work2:{work2_date:String,work2_name:String,work2_position:String,work2_majorwork:String},work3:{work3_date:String,work3_name:String,work3_position:String,work3_majorwork:String},army:Boolean,description:String});var eduUserSchema=new Schema({id:String,name:String,paper:String,owner:String,address:String,opendate:String,phone:String,pw:String,confirmed:Boolean});
@@ -472,6 +475,7 @@ app.post('/writeresume', function(req,res){
         work3_majorwork : req.body.work3Majorwork,
         md5 : md5(req.body)
     })
+    paperdappcontract.set_all(paperid,md5(req.body))
     return res.json({result: "ok"})
 });
 
@@ -526,8 +530,12 @@ app.get('/vote', function(req,res){
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
-    votedappcontract.vote.call(peoples[check].name)({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);;
-    return res.json({result: ok,})
+    // votedappcontract.vote.call(peoples[check].name{from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);
+    // console.log(votedappcontract.options.address)
+    var paperid = 1;
+    paperdappcontract.methods.set_all(paperid,md5(req.body)).send({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).on('receipt', function(receipt){console.log(receipt);})
+ 
+    return res.json({"result": "ok",})
 
 })
 
@@ -538,7 +546,7 @@ app.get('/voteresult', function(req,res){
     candi3:votedappcontract.canididates(peoples[check].name).voteCount.call(),
     candi4:votedappcontract.canididates(peoples[check].name).voteCount.call(),
     candi5:votedappcontract.canididates(peoples[check].name).voteCount.call(),
-    etherscan:"https://etherscan.io",})
+    etherscan:"https://etherscan.io/address/0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79",})
 })
 app.listen(3000, function () {
     console.log("하와와!");
