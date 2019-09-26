@@ -21,8 +21,8 @@ module.exports = (session) => {
         doc.fontSize(10);
         
         HEIGHT = 88;
-        // doc.text(session.username || '', 230, HEIGHT);
-        // doc.text(session.usernameEn || '', 430, HEIGHT);
+        doc.text(session.username || '', 230, HEIGHT);
+        doc.text(session.usernameEn || '', 430, HEIGHT);
         
         HEIGHT = 118; 
         doc.text('2004년 11월 19일', 200, HEIGHT);
@@ -76,27 +76,31 @@ module.exports = (session) => {
         doc.text(session.work1_position || '', 520, HEIGHT - 6, { align: 'center' });
          
         HEIGHT = 525;
+        doc.text(session.work2_date || '', -170, HEIGHT, { align: 'center' });
+        doc.text(session.work2_name || '', 195, HEIGHT, { align: 'center' });
+        doc.text(session.work2_majorwork || '', 348, HEIGHT, { align: 'center' });
+        doc.text(session.work2_position || '', 520, HEIGHT - 6, { align: 'center' });
+
+        HEIGHT = 555;
+        doc.text(session.work3_date || '', -170, HEIGHT, { align: 'center' });
+        doc.text(session.work3_name || '', 195, HEIGHT, { align: 'center' });
+        doc.text(session.work3_majorwork || '', 348, HEIGHT, { align: 'center' });
+        doc.text(session.work3_position || '', 520, HEIGHT - 6, { align: 'center' });
         
-        // HEIGHT = 555;
-        // doc.text('2012년 11월 ~', -170, HEIGHT, { align: 'center' });
-        // doc.text('Cloudus', 195, HEIGHT, { align: 'center' });
-        // doc.text('제주도', 348, HEIGHT, { align: 'center' });
-        // doc.text('해당없음', 520, HEIGHT - 6, { align: 'center' });
+        HEIGHT = 650;
+        doc.text('2018년 4월 ~ 2018 년 7월', -250, HEIGHT, { align: 'center' });
+        doc.text('2018 블록체인 캠퍼스', 140, HEIGHT, { align: 'center' });
+        doc.text('해당없음', 464, HEIGHT, { align: 'center' });
         
-        // HEIGHT = 650;
-        // doc.text('2012년 11월 ~ 2018년 2월', -250, HEIGHT, { align: 'center' });
-        // doc.text('Stella IT', 140, HEIGHT, { align: 'center' });
-        // doc.text('해당없음', 464, HEIGHT, { align: 'center' });
-        
-        // HEIGHT = 680;
-        // doc.text('2012년 11월 ~', -250, HEIGHT, { align: 'center' });
-        // doc.text('Cloudus', 140, HEIGHT, { align: 'center' });
-        // doc.text('해당없음', 464, HEIGHT, { align: 'center' });
+        HEIGHT = 680;
+        doc.text('2019년 4월 ~ 2019년 7월', -250, HEIGHT, { align: 'center' });
+        doc.text('2019 블록체인 캠퍼스', 140, HEIGHT, { align: 'center' });
+        doc.text('해당없음', 464, HEIGHT, { align: 'center' });
         
         doc.pipe(fs.createWriteStream(`pdf/${uuid}.pdf`))
         doc.end();  
         return uuid;
     } catch(err) {
-        return 'default';
+        return '';
     }
 }
