@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const { Schema } = mongoose;
 const fs = require('fs');
 const Web3 = require('web3');
@@ -10,6 +11,7 @@ const cors = require('cors');
 const request = require('request');
 const peoples = [];
 const md5 = require('md5');
+const pdf = require('./pdf');
 
 app.use(cors());
 app.use(express.json());
@@ -23,12 +25,15 @@ web3.setProvider(new Web3.providers.HttpProvider('http://112.161.27.56:8545'));
 var tokenabi = JSON.parse(fs.readFileSync("tokenabi.json"));
 var votedappabi = JSON.parse(fs.readFileSync("notaabi.json"));
 var paperdappabi = JSON.parse(fs.readFileSync("paperabi.json"));
+var vodaabi = JSON.parse(fs.readFileSync("vodaabi.json"));
 var tokenAddress = "0x8941aec64f500e52593cdc94fdb997540d65f1e0";
 var votedappAddress = "0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79"
 var paperdappAddress = "0xf9c3A6d486f88630B97cc532A234eddbe475c36d"
+var vodaAddress = "0x7d7e9f5fdca3ab313d1a8b753f1686318eb25de9"
 var tokencontract = new web3.eth.Contract(tokenabi,tokenAddress)
 var votedappcontract = new web3.eth.Contract(votedappabi,votedappAddress)
 var paperdappcontract = new web3.eth.Contract(paperdappabi, paperdappAddress)
+var vodacontract = new web3.eth.Contract(vodaabi,vodaAddress)
 var transfertoken = function sendeth(privatekey,walletaddr,toaddr,value) { var rawTransaction = {"from": walletaddr,"nonce": web3.toHex(count),"gasPrice": "0x04e3b29200","gasLimit": "0x7458","to": contractAddress,"value": "0x0","data": contract.transfer.getData(toaddr, value, {from: walletaddr}),"chainId": 0x03};var privKey = new Buffer(privatekey, 'hex');var tx = new Tx(rawTransaction); tx.sign(privKey); var serializedTx = tx.serialize(); web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) { if (!err) console.log(hash);else console.log(err);});};
 var UserSchema = new Schema({company: String,id: String,pw: String,type: String,name: String,email: String,phone: String,wallet_addr: String,status: String,wallet_privkey: String,description: String,userwhere:String});
 var userPaperSchema = new Schema({hash:String,confirmed:Boolean,ownerid:String,sex:String,koreanname:String,englishname:String,birthdate:String,mail:String,phone:String,address:String,school1:{school1_name:String,school1_graduate:String,school1_where:String,school1_graduatedate:String},school2:{school2_name:String,school2_graduate:String,school2_where:String,school2_graduatedate:String},school3:{school3_name:String,school3_graduate:String,school3_where:String,school3_graduatedate:String},school4:{school4_name:String,school4_graduate:String,school4_major:String,school4_where:String,school4_graduatedate:String},work1:{work1_date:String,work1_name:String,work1_position:String,work1_majorwork:String},work2:{work2_date:String,work2_name:String,work2_position:String,work2_majorwork:String},work3:{work3_date:String,work3_name:String,work3_position:String,work3_majorwork:String},army:Boolean,description:String});var eduUserSchema=new Schema({id:String,name:String,paper:String,owner:String,address:String,opendate:String,phone:String,pw:String,confirmed:Boolean});
@@ -41,11 +46,18 @@ var eduUser = mongoose.model('eduUser', eduUserSchema);
 var temp = mongoose.model('temp',tempSchema);
 var classdata = mongoose.model('classdata',classdataSchema);
 var join = mongoose.model('join',joinSchema);
+app.use(cookieParser());
 app.use(session({
-    secret: 'HawawaYooWoungJJang'
+    name : 'connect.sid',
+    secret: 'HawawaYooWoungJJang',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 // 쿠키 유효기간 1시간
+    }
 }));
 app.get('/', function(req, res) {
-    console.log("hello")    
+    console.log("hello");  
     });
 // -----------------signup------------------
 // app.get('/signup', function(req, res) {
@@ -438,19 +450,26 @@ app.post('/temp2', function(req,res){
 //------------
 
 app.get('/pdf/:id', function(req, res){
-
+    try {
     if(req.query.download === '') {
         res.setHeader('Content-disposition', 'attachment; filename=nota.pdf');
     }
-    return fs.createReadStream(req.params.id + '.pdf').pipe(res);
+    
+    return fs.createReadStream(`pdf/${req.params.id}.pdf`).pipe(res);
+}  catch{ res.statusCode(404).end()}
 });
 
-app.post('/generate', (req, res) => {
-    res.json({
-        opcode: 'success',
-        generateKey: 'exampleGenerateKey'
-    });
-});
+// app.get('/generate', (req, res) => {
+//     console.log(req.session.paper)
+//     if(!req.session.paper) return res.json({
+//         opcode: 'failed'
+//     });
+
+//     res.json({
+//         opcode: 'success',
+//         generateKey: pdf(req.session.paper)
+//     });
+// });
 
 app.post('/writeresume', function(req,res){
     const paper = {
@@ -478,13 +497,16 @@ app.post('/writeresume', function(req,res){
         work3_name : req.body.work3Name,
         work3_position : req.body.work3Position,
         work3_majorwork : req.body.work3Majorwork,
-        md5 : md5(req.body)
     };
 
     papers.push(paper)
-    req.session.paper = paper;
-    // paperdappcontract.set_all(paperid,md5(req.body))
-    return res.json({result: "ok"})
+    // req.session.paper = paper;
+    // req.session.save((err) => console.error(err));
+    // paperdappcontract.methods.set_all(req.sessionID,md5(req.body)).send({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).on('receipt', function(receipt){console.log(receipt);})
+    return res.json({
+        result: "ok",
+        pdf: pdf(paper)
+    });
 });
 
 app.get('/resumeresult', function(req,res){
@@ -538,25 +560,32 @@ app.get('/vote', function(req,res){
 })
 app.post('/vote', function(req,res){
     check = req.query.number;
+    console.log("")
     // votedappcontract.vote.call(peoples[check].name{from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);
-    // console.log(votedappcontract.options.address)
-    var paperid = 1;
     web3.eth.personal.unlockAccount("0xF490eF63dc8ed8E14eee4A7ab4605d302E838465", "hjww0904", 200);
-    paperdappcontract.methods.set_all(paperid,md5(req.body)).send({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).on('receipt', function(receipt){console.log(receipt);})
- 
+    vodacontract.methods.vote("James Lee").send({from: '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe'}).on('receipt', function(receipt){console.log(receipt);})
+    console.l
     return res.json({"result": "ok",})
 
 })
 
-app.get('/voteresult', function(req,res){
-    return res.json({
-    candi1:votedappcontract.canididates["James Lee"].voteCount.call(),    
-    candi2:votedappcontract.canididates["Mark Kim"].voteCount.call(),
-    candi3:votedappcontract.canididates["Jun Park"].voteCount.call(),
-    candi4:votedappcontract.canididates["Yuna Lim"].voteCount.call(),
-    candi5:votedappcontract.canididates["Olivia Ha"].voteCount.call(),
-    etherscan:"https://etherscan.io/address/0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79",})
-})
+// app.get('/voteresult', function(req,res){
+//    vodacontract.methods.getdata().call().then(console.log);
+//     // return res.json({
+//     // candi1:votedappcontract.canididates("James Lee").voteCount.call(),    
+//     // candi2:votedappcontract.canididates("Mark Kim"].voteCount.call(),
+//     // candi3:votedappcontract.canididates["Jun Park"].voteCount.call(),
+//     // candi4:votedappcontract.canididates["Yuna Lim"].voteCount.call(),
+//     // candi5:votedappcontract.canididates["Olivia Ha"].voteCount.call(),
+//     // etherscan:"https://etherscan.io/address/0xbcf6a1cb943c26b5f614d38b4811af4bf6277a79",})
+// })
+
+
+// app.get('/testt', function(req,res){
+//     return res.json({
+//         a:votedappcontract.canididates.call(),
+//     })
+// })
 app.listen(3000, function () {
     console.log("하와와!");
     
