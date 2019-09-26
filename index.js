@@ -533,7 +533,7 @@ app.post('/vote', function(req,res){
     // votedappcontract.vote.call(peoples[check].name{from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);
     // console.log(votedappcontract.options.address)
     var paperid = 1;
-    web3.personal.unlockAccount("0xF490eF63dc8ed8E14eee4A7ab4605d302E838465", "hjww0904", 200);
+    web3.eth.personal.unlockAccount("0xF490eF63dc8ed8E14eee4A7ab4605d302E838465", "hjww0904", 200);
     paperdappcontract.methods.set_all(paperid,md5(req.body)).send({from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).on('receipt', function(receipt){console.log(receipt);})
  
     return res.json({"result": "ok",})
