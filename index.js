@@ -562,8 +562,8 @@ app.post('/vote', function(req,res){
     check = req.query.number;
     console.log("")
     // votedappcontract.vote.call(peoples[check].name{from: '0xF490eF63dc8ed8E14eee4A7ab4605d302E838465'}).then(console.log);
-    web3.eth.personal.unlockAccount("0xF490eF63dc8ed8E14eee4A7ab4605d302E838465", "hjww0904", 200);
-    vodacontract.methods.vote("James Lee").send({from: '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe'}).on('receipt', function(receipt){console.log(receipt);})
+    web3.eth.personal.unlockAccount("<wallet>", "<passworD>", 200);
+    vodacontract.methods.vote("James Lee").send({from: '<wallet>'}).on('receipt', function(receipt){console.log(receipt);})
     console.l
     return res.json({"result": "ok",})
 
